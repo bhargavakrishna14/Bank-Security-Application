@@ -23,36 +23,41 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 	private JwtAuthenticationHelper jwtHelper;
 
 	@Autowired
-	UserDetailsService userDetailsService;
+	private UserDetailsService userDetailsService;
 
 	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+	protected void doFilterInternal(HttpServletRequest request,
+									HttpServletResponse response,
+									FilterChain filterChain) throws ServletException, IOException {
+
 		String requestHeader = request.getHeader("Authorization");
+		String username = null;
+		String token = null;
 
-		String username =null;
-		String token =null;
-
-		if(requestHeader!=null && requestHeader.startsWith("Bearer"))
-		{
+		if (requestHeader != null && requestHeader.startsWith("Bearer ")) {
 			token = requestHeader.substring(7);
-
-			username= jwtHelper.getUsernameFromToken(token);
-
-			if(username!=null &&
-					SecurityContextHolder.getContext().getAuthentication()==null) {
-
-				UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-
-				if(!jwtHelper.isTokenExpired(token)) {
-					UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-							new UsernamePasswordAuthenticationToken(token, null, userDetails.getAuthorities());
-
-					usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-					SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-				}
-
+			try {
+				username = jwtHelper.getUsernameFromToken(token);
+			} catch (Exception e) {
+//				logger.warn("Invalid JWT Token: {}", e);
+				logger.warn("Invalid JWT Token: " + e.getMessage());
 			}
 		}
+
+		if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+			UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+			if (!jwtHelper.isTokenExpired(token)) {
+				UsernamePasswordAuthenticationToken authToken =
+						new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+
+				authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+				SecurityContextHolder.getContext().setAuthentication(authToken);
+			} else {
+				logger.warn("JWT Token has expired");
+			}
+		}
+
 		filterChain.doFilter(request, response);
 	}
 }
