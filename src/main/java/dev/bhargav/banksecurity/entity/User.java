@@ -32,8 +32,8 @@ public class User implements UserDetails {
 
     private String identityProof;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    private Role roles;
+    @ManyToOne(fetch = FetchType.EAGER) // EAGER is fine for security
+    private Role role;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonManagedReference
@@ -47,7 +47,7 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(this.roles.getRoleName()));
+        authorities.add(new SimpleGrantedAuthority(this.role.getRoleName()));
         return authorities;
     }
 
