@@ -14,38 +14,37 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthService {
 
-	@Autowired
-	AuthenticationManager manager;
+    @Autowired
+    AuthenticationManager manager;
 
-	@Autowired
-	JwtAuthenticationHelper jwtHelper;
+    @Autowired
+    JwtAuthenticationHelper jwtHelper;
 
-	@Autowired
-	UserDetailsService userDetailsService;
+    @Autowired
+    UserDetailsService userDetailsService;
 
-	public JwtResponse login(JwtRequest jwtRequest) {
+    public JwtResponse login(JwtRequest jwtRequest) {
 
-		//authenticate with Authentication manager
-		this.doAuthenticate(jwtRequest.getUsername(),jwtRequest.getPassword());
+            //authenticate with Authentication manager
 
-		UserDetails userDetails = userDetailsService.loadUserByUsername(jwtRequest.getUsername());
-		String token = jwtHelper.generateToken(userDetails);
+            this.doAuthenticate(jwtRequest.getUsername(),jwtRequest.getPassword());
 
-		JwtResponse response = JwtResponse.builder().jwtToken(token).build();
-		return response;
-	}
+            UserDetails userDetails = userDetailsService.loadUserByUsername(jwtRequest.getUsername());
+            String token = jwtHelper.generateToken(userDetails);
 
-	private void doAuthenticate(String username, String password) {
+            JwtResponse response = JwtResponse.builder().jwtToken(token).build();
+            return response;
+    }
 
-		UsernamePasswordAuthenticationToken authenticationToken =
-				new UsernamePasswordAuthenticationToken(username, password);
+    private void doAuthenticate(String username, String password) {
 
-		try {
-			manager.authenticate(authenticationToken);
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
+        try {
+            manager.authenticate(authenticationToken);
 
-		} catch (BadCredentialsException e) {
-			throw new BadCredentialsException("Invalid Username or Password");
-		}
-	}
+        }catch (BadCredentialsException e) {
+            throw new BadCredentialsException("Invalid Username or Password");
+        }
+    }
 
 }

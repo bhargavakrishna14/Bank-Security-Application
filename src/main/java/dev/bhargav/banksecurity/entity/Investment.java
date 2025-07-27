@@ -1,34 +1,36 @@
 package dev.bhargav.banksecurity.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
+import jakarta.persistence.*;
 
 @Entity
 @Data
 public class Investment {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Enumerated(EnumType.STRING)
-    private InvestmentType investmentType;
+  @Enumerated(EnumType.STRING)
+  private InvestmentType investmentType;
 
-    private String risk;
+  private String risk;
 
-    private double amount;
+  private double amount;
 
-    private float returns;
+  private float returns;
 
-    private String duration;
+  private String duration;
 
-    private String companyName;
+  private String companyName;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    @JsonBackReference
-    private User user;
+  @ManyToOne
+  @JsonIgnoreProperties("investmentList")
+  @JoinColumn(name = "user_id")
+  private User user;
 
 }
+
+

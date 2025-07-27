@@ -18,7 +18,6 @@ public class InvestmentService {
 
     @Autowired
     InvestmentRepository investmentRepository;
-
     public String investNow(Long accountId, InvestmentDto investmentDto) {
         Account account = accountRepository.findById(accountId).get();
         User user =  account.getUser();

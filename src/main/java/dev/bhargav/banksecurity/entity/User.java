@@ -1,15 +1,12 @@
 package dev.bhargav.banksecurity.entity;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
+import java.util.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import jakarta.persistence.*;
 
 @Entity
 @Data
@@ -32,22 +29,21 @@ public class User implements UserDetails {
 
     private String identityProof;
 
-    @ManyToOne(fetch = FetchType.EAGER) // EAGER is fine for security
-    private Role role;
+    @ManyToOne(cascade = CascadeType.ALL)
+    private Role roles;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    @JsonManagedReference
+    @JsonIgnoreProperties("user")
     private List<Account> accountList = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    @JsonManagedReference
+    @JsonIgnoreProperties("user")
     private List<Investment> investmentList = new ArrayList<>();
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(this.role.getRoleName()));
+        authorities.add(new SimpleGrantedAuthority(this.roles.getRoleName()));
         return authorities;
     }
 

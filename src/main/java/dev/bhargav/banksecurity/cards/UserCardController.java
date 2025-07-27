@@ -1,4 +1,4 @@
-package dev.bhargav.banksecurity.controller;
+package dev.bhargav.banksecurity.cards;
 
 import dev.bhargav.banksecurity.dto.CardDto;
 import dev.bhargav.banksecurity.entity.Card;
@@ -18,21 +18,24 @@ public class UserCardController {
     @GetMapping("/block")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasRole('CUSTOMER')")
-    public String blockCard(@RequestParam Long accountNumber,@RequestParam Long cardNumber) {
+    public String blockCard(@RequestParam Long accountNumber,@RequestParam Long cardNumber)
+    {
         return cardService.blockCard(accountNumber,cardNumber);
     }
 
     @PostMapping("/apply/new")
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('CUSTOMER')")
-    public String applyNewCard(@RequestParam Long accountNumber, @RequestBody CardDto cardDto) {
+    public String applyNewCard(@RequestParam Long accountNumber, @RequestBody CardDto cardDto)
+    {
         return cardService.applyNewCard(accountNumber,cardDto);
     }
 
     @PutMapping("/setting")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasRole('CUSTOMER')")
-    public void modifyLimit(@RequestBody Card card, @RequestParam Long cardNumber) {
+    public void modifyLimit(@RequestBody Card card, @RequestParam Long cardNumber)
+    {
         cardService.modifySetting(cardNumber,card);
     }
 

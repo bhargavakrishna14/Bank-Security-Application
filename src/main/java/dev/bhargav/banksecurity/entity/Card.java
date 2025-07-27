@@ -1,8 +1,8 @@
 package dev.bhargav.banksecurity.entity;
 
-import jakarta.persistence.*;
 import lombok.Data;
 
+import jakarta.persistence.*;
 import java.util.Date;
 
 @Entity
@@ -31,4 +31,5 @@ public class Card {
     private Long pin;
 
     private String status;
+
 }

@@ -9,31 +9,25 @@ import dev.bhargav.banksecurity.repository.CardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 @Service
 public class CardService {
 
     @Autowired
     AccountRepository accountRepository;
-
     @Autowired
     CardRepository cardRepository;
 
     public String blockCard(Long accountNumber, Long cardNumber) {
         Account account = accountRepository.findByAccountNumber(accountNumber).get();
         Card card = cardRepository.findByCardNumber(cardNumber).get();
-
         if(account.getCard().getCardNumber().equals(card.getCardNumber())){
             account.setCard(null);
             accountRepository.save(account);
             cardRepository.deleteById(card.getId());
             return "Card Blocked Successfully";
         }
-
         throw new RuntimeException("No Card Found with the given cardNumber: "+ cardNumber);
     }
 
@@ -101,16 +95,16 @@ public class CardService {
         Card fetchedCard = optionalCard.get();
         switch(fetchedCard.getCardType()){
             case DEBIT_GLOBAL -> {
-                if(cardLimit != 0 && carDto.getDailyLimit()<= 50000) fetchedCard.setDailyLimit(carDto.getDailyLimit());
+            if(cardLimit != 0 && carDto.getDailyLimit()<= 50000) fetchedCard.setDailyLimit(carDto.getDailyLimit());
             }
             case DEBIT_CLASSIC -> {
-                if(cardLimit != 0 && carDto.getDailyLimit()<= 40000) fetchedCard.setDailyLimit(carDto.getDailyLimit());
+            if(cardLimit != 0 && carDto.getDailyLimit()<= 40000) fetchedCard.setDailyLimit(carDto.getDailyLimit());
             }
             case CREDIT_MASTER -> {
-                if(cardLimit != 0 && carDto.getDailyLimit()<= 100000) fetchedCard.setDailyLimit(carDto.getDailyLimit());
+            if(cardLimit != 0 && carDto.getDailyLimit()<= 100000) fetchedCard.setDailyLimit(carDto.getDailyLimit());
             }
             case CREDIT_PREMIUM -> {
-                if(cardLimit != 0 && carDto.getDailyLimit()<= 75000)  fetchedCard.setDailyLimit(carDto.getDailyLimit());
+            if(cardLimit != 0 && carDto.getDailyLimit()<= 75000)  fetchedCard.setDailyLimit(carDto.getDailyLimit());
             }
         }
         if(carDto.getPin()!=null) fetchedCard.setPin(carDto.getPin());

@@ -11,10 +11,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
-
     @Autowired
     UserRepository userRepository;
 
@@ -23,17 +23,12 @@ public class UserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
-
     public void registerUser(UserDto userDto){
-
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         String encodedPassword = encoder.encode(userDto.getPassword());
-
         Role role = new Role();
         role.setRoleName("ROLE_CUSTOMER");
-
         User saveUser = new User();
-
         saveUser.setName(userDto.getName());
         saveUser.setPassword(encodedPassword);
         saveUser.setUsername(userDto.getUsername());
@@ -41,20 +36,15 @@ public class UserService {
         saveUser.setNumber(userDto.getNumber());
         saveUser.setRoles(role);
         saveUser.setAddress(userDto.getAddress());
-
         userRepository.save(saveUser);
     }
 
     public void registerAdmin(AdminDto adminDto){
-
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         String encodedPassword = encoder.encode(adminDto.getPassword());
-
         Role role = new Role();
         role.setRoleName("ROLE_ADMIN");
-
         User saveUser = new User();
-
         saveUser.setName(adminDto.getName());
         saveUser.setPassword(encodedPassword);
         saveUser.setUsername(adminDto.getUsername());
@@ -62,7 +52,6 @@ public class UserService {
         saveUser.setNumber(adminDto.getNumber());
         saveUser.setRoles(role);
         saveUser.setAddress(adminDto.getAddress());
-
         userRepository.save(saveUser);
     }
 
@@ -79,15 +68,14 @@ public class UserService {
             userRepository.deleteById(userId);
             return "Deleted Successfully";
         }
-        return "Error in deletion";
+         return "Error in deletion";
     }
 
     public String deactivateUser(Long userId,Long accountId) {
         if(userRepository.existsById(userId) && accountRepository.existsById(accountId)){
             User user = userRepository.findById(userId).get();
             Account account = accountRepository.findById(accountId).get();
-
-            if(user.getAccountList().contains(account)) {
+            if(user.getAccountList().contains(account)){
                 System.out.println("Account Found");
                 account.setStatus("INACTIVE");
                 accountRepository.save(account);
@@ -98,11 +86,9 @@ public class UserService {
     }
 
     public String activateAccount(Long userId, Long accountId) {
-
         if(userRepository.existsById(userId) && accountRepository.existsById(accountId)){
             User user = userRepository.findById(userId).get();
             Account account = accountRepository.findById(accountId).get();
-
             if(user.getAccountList().contains(account) && account.getStatus().equals("INACTIVE")){
                 System.out.println("1 Account Found");
                 account.setStatus("ACTIVE");
