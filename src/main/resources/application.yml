@@ -2,7 +2,7 @@ spring:
   application:
     name: banksecurity
   datasource:
-    url: jdbc:mysql://localhost:3306/bank_application?createDatabaseIfNotExist=true
+    url: jdbc:mysql://localhost:3306/bank_app?createDatabaseIfNotExist=true
     username: root
     password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -17,7 +17,7 @@ application:
   security:
     jwt:
       secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
-      expiration: 86400000 # a day (60*60)
+      expiration: 3600 #86400000( a day (60*60))
       refresh-token:
         expiration: 604800000 # 7 days
 
