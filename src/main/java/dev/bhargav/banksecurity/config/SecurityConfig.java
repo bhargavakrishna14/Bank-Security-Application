@@ -33,7 +33,8 @@ public class SecurityConfig {
                                 req
                                 .requestMatchers(
                                         "/user/register",
-                                        "/user/login"
+                                        "/user/login",
+                                        "/admin/add"
                                 ).permitAll()
                 .anyRequest()
                 .authenticated()

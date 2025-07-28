@@ -28,26 +28,34 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 			HttpServletResponse response,
 			FilterChain filterChain) throws ServletException, IOException {
 
-		String requestHeader = request.getHeader("Authorization");
+		final String authHeader = request.getHeader("Authorization");
 
-		String username =null;
-		String token =null;
-
-		if(requestHeader!=null && requestHeader.startsWith("Bearer")) {
-			token = requestHeader.substring(7);
-			
-			username= jwtHelper.getUsernameFromToken(token);
-			
-			if(username!=null && SecurityContextHolder.getContext().getAuthentication()==null) {
-				UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-				
-				if(!jwtHelper.isTokenExpired(token)) {
-					UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(token, null,userDetails.getAuthorities());
-					usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-					SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-				}
-			}
+		if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+			filterChain.doFilter(request, response);
+			return;
 		}
+		final String token = authHeader.substring(7);
+		final String userEmail = jwtHelper.extractUsername(token);
+		if (userEmail == null) {
+			filterChain.doFilter(request, response);
+			return;
+		}
+
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
+		if (jwtHelper.isNotTokenValid(token, userDetails)) {
+			filterChain.doFilter(request, response);
+			return;
+		}
+
+		final UsernamePasswordAuthenticationToken authentication =
+				new UsernamePasswordAuthenticationToken(
+						userDetails,
+						null,
+						userDetails.getAuthorities()
+				);
+
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+
 		filterChain.doFilter(request, response);
 	}
 	
