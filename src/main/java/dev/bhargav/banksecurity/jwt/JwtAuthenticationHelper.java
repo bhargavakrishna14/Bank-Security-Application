@@ -21,21 +21,23 @@ public class JwtAuthenticationHelper {
 	@Value("${application.security.jwt.expiration}")
 	private long jwtTokenValidity;
 	
-	public String getUsernameFromToken(String token)
-	{
+	public String getUsernameFromToken(String token) {
 		Claims claims =  getClaimsFromToken(token);
 		return claims.getSubject();
 	}
 	
-	public Claims getClaimsFromToken(String token)
-	{
-		Claims claims = Jwts.parserBuilder().setSigningKey(secretKey.getBytes())
-				.build().parseClaimsJws(token).getBody();
+	public Claims getClaimsFromToken(String token) {
+		Claims claims = Jwts
+				.parserBuilder()
+				.setSigningKey(secretKey.getBytes())
+				.build()
+				.parseClaimsJws(token)
+				.getBody();
+
 		return claims;
 	}
 	
-	public Boolean isTokenExpired(String token)
-	{
+	public Boolean isTokenExpired(String token) {
 		Claims claims =  getClaimsFromToken(token);
 		Date expDate = claims.getExpiration();
 		return expDate.before(new Date());

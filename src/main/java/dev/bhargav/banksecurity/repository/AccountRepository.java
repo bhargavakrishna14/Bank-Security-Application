@@ -12,13 +12,18 @@ import java.util.Optional;
 
 @Repository
 public interface AccountRepository extends JpaRepository<Account,Long> {
+
     Optional<Account> findByAccountNumber(Long accountNumber);
+
     @Query("SELECT a FROM Account a WHERE a.status = 'ACTIVE'")
     List<Account> findAllActiveAccounts();
+
     @Query("SELECT a FROM Account a WHERE a.status = 'INACTIVE'")
     List<Account> findAllInActiveAccounts();
+
     @Query("SELECT a FROM Account a WHERE a.accountType = :accountType")
     List<Account> findAllByAccountType(AccountType accountType);
+
     @Query("SELECT a FROM Account a WHERE a.branch = :branchType")
     List<Account> findAllByBranch(BranchType branchType);
 
