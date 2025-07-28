@@ -1,4 +1,4 @@
-package dev.bhargav.banksecurity.jwt;
+package dev.bhargav.banksecurity.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -41,18 +41,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 			return;
 		}
 
-		final UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
+		UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
 		if (jwtHelper.isNotTokenValid(token, userDetails)) {
 			filterChain.doFilter(request, response);
 			return;
 		}
 
-		final UsernamePasswordAuthenticationToken authentication =
+		UsernamePasswordAuthenticationToken authentication =
 				new UsernamePasswordAuthenticationToken(
 						userDetails,
 						null,
 						userDetails.getAuthorities()
 				);
+
+		authentication.setDetails(
+				new WebAuthenticationDetailsSource().buildDetails(request)
+		);
 
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 

@@ -11,7 +11,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserService {
@@ -23,6 +22,7 @@ public class UserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
     public void registerUser(UserDto userDto){
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         String encodedPassword = encoder.encode(userDto.getPassword());
