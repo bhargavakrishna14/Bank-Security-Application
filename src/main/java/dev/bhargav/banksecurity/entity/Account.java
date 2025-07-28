@@ -16,7 +16,8 @@ public class Account {
    @Enumerated(EnumType.STRING)
    private AccountType accountType;
 
-   private String status;
+   @Enumerated(EnumType.STRING)
+   private AccountStatus status;
 
    private double balance;
 

@@ -1,6 +1,5 @@
 package dev.bhargav.banksecurity.auth;
 
-import dev.bhargav.banksecurity.dto.UserDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

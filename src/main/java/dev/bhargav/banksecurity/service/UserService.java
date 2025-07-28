@@ -1,102 +1,78 @@
 package dev.bhargav.banksecurity.service;
 
-import dev.bhargav.banksecurity.dto.AdminDto;
-import dev.bhargav.banksecurity.dto.UserDto;
 import dev.bhargav.banksecurity.entity.*;
 import dev.bhargav.banksecurity.repository.AccountRepository;
 import dev.bhargav.banksecurity.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class UserService {
-    @Autowired
-    UserRepository userRepository;
 
-    @Autowired
-    AccountRepository accountRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final AccountRepository accountRepository;
 
-    public void registerUser(UserDto userDto){
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        String encodedPassword = encoder.encode(userDto.getPassword());
-        Role role = new Role();
-        role.setRoleName("ROLE_CUSTOMER");
-        User saveUser = new User();
-        saveUser.setName(userDto.getName());
-        saveUser.setPassword(encodedPassword);
-        saveUser.setUsername(userDto.getUsername());
-        saveUser.setIdentityProof(userDto.getIdentityProof());
-        saveUser.setNumber(userDto.getNumber());
-        saveUser.setRoles(role);
-        saveUser.setAddress(userDto.getAddress());
-        userRepository.save(saveUser);
-    }
-
-    public void registerAdmin(AdminDto adminDto){
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        String encodedPassword = encoder.encode(adminDto.getPassword());
-        Role role = new Role();
-        role.setRoleName("ROLE_ADMIN");
-        User saveUser = new User();
-        saveUser.setName(adminDto.getName());
-        saveUser.setPassword(encodedPassword);
-        saveUser.setUsername(adminDto.getUsername());
-        saveUser.setIdentityProof(adminDto.getIdentityProof());
-        saveUser.setNumber(adminDto.getNumber());
-        saveUser.setRoles(role);
-        saveUser.setAddress(adminDto.getAddress());
-        userRepository.save(saveUser);
-    }
-
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public Page<User> getAllUsers(Pageable pageable) {
+        return userRepository.findAll(pageable);
     }
 
     public User getUserByName(String username) {
-        return userRepository.findByUsername(username).get();
+        return userRepository.findByUsername(username).
+                orElseThrow(() -> new RuntimeException("User not found: " + username));
     }
 
     public String deleteUserById(Long userId) {
-        if(userRepository.existsById(userId)){
-            userRepository.deleteById(userId);
-            return "Deleted Successfully";
+        if (!userRepository.existsById(userId)) {
+            throw new RuntimeException("User not found: " + userId);
         }
-         return "Error in deletion";
+        userRepository.deleteById(userId);
+        return "Deleted Successfully";
     }
 
-    public String deactivateUser(Long userId,Long accountId) {
-        if(userRepository.existsById(userId) && accountRepository.existsById(accountId)){
-            User user = userRepository.findById(userId).get();
-            Account account = accountRepository.findById(accountId).get();
-            if(user.getAccountList().contains(account)){
-                System.out.println("Account Found");
-                account.setStatus("INACTIVE");
-                accountRepository.save(account);
-            }
-            return "Deactivated Account for User with id: "+userId;
+    @Transactional
+    public String deactivateUser(Long userId, Long accountId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found: " + userId));
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new RuntimeException("Account not found: " + accountId));
+
+        if (!user.getAccountList().contains(account)) {
+            throw new RuntimeException("Account does not belong to this user");
         }
-        return "ERROR";
+        account.setStatus(AccountStatus.INACTIVE);
+        accountRepository.save(account);
+        log.info("Deactivated account {} for user {}", accountId, userId);
+        return "Deactivated account for user with id: " + userId;
     }
 
+    @Transactional
     public String activateAccount(Long userId, Long accountId) {
-        if(userRepository.existsById(userId) && accountRepository.existsById(accountId)){
-            User user = userRepository.findById(userId).get();
-            Account account = accountRepository.findById(accountId).get();
-            if(user.getAccountList().contains(account) && account.getStatus().equals("INACTIVE")){
-                System.out.println("1 Account Found");
-                account.setStatus("ACTIVE");
-                accountRepository.save(account);
-                return "Activated Account for User with id: "+userId;
-            }
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found: " + userId));
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new RuntimeException("Account not found: " + accountId));
+
+        if (!user.getAccountList().contains(account)) {
+            throw new RuntimeException("Account does not belong to this user");
         }
-        return "ERROR";
+        if (account.getStatus() == AccountStatus.ACTIVE) {
+            throw new RuntimeException("Account is already active");
+        }
+        account.setStatus(AccountStatus.ACTIVE);
+        accountRepository.save(account);
+        log.info("Activated account {} for user {}", accountId, userId);
+        return "Activated account for user with id: " + userId;
     }
 
     public List<Account> getAllActiveAccountList() {
@@ -106,7 +82,6 @@ public class UserService {
     public List<Account> getAllInActiveAccountList() {
         return accountRepository.findAllInActiveAccounts();
     }
-
 
     public List<Account> byAccType(AccountType accType) {
         return accountRepository.findAllByAccountType(accType);

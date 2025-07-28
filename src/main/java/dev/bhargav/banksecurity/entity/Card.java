@@ -30,6 +30,7 @@ public class Card {
 
     private Long pin;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private CardStatus status;
 
 }

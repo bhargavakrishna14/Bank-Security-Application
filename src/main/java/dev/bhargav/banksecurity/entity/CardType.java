@@ -5,5 +5,4 @@ public enum CardType {
     DEBIT_GLOBAL,
     CREDIT_PREMIUM,
     CREDIT_MASTER
-
 }

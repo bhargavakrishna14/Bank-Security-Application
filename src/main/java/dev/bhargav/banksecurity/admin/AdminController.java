@@ -7,6 +7,8 @@ import dev.bhargav.banksecurity.entity.BranchType;
 import dev.bhargav.banksecurity.entity.User;
 import dev.bhargav.banksecurity.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -19,17 +21,14 @@ public class AdminController {
 
     private final UserService adminUserService;
 
-    @PostMapping("/add")
-    @ResponseStatus(HttpStatus.CREATED)
-    public void registerAdmin(@RequestBody AdminDto admin) {
-        adminUserService.registerAdmin(admin);
-    }
-
     @GetMapping("/getAllUser")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasRole('ADMIN')")
-    public List<User> getAllUser() {
-        return adminUserService.getAllUsers();
+    public Page<User> getAllUser(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size)
+    {
+        return adminUserService.getAllUsers(PageRequest.of(page, size));
     }
 
     @GetMapping("/getUserByName/{username}")
