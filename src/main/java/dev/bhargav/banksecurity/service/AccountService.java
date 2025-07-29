@@ -4,153 +4,148 @@ import dev.bhargav.banksecurity.dto.AccountDto;
 import dev.bhargav.banksecurity.dto.KycDto;
 import dev.bhargav.banksecurity.dto.NomineeDto;
 import dev.bhargav.banksecurity.entity.*;
+import dev.bhargav.banksecurity.exceptions.AccountNotFoundException;
+import dev.bhargav.banksecurity.exceptions.UserNotFoundException;
 import dev.bhargav.banksecurity.repository.AccountRepository;
-import dev.bhargav.banksecurity.repository.CardRepository;
 import dev.bhargav.banksecurity.repository.NomineeRepository;
 import dev.bhargav.banksecurity.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
+@RequiredArgsConstructor
 public class AccountService {
-    @Autowired
-    AccountRepository accountRepository;
-    @Autowired
-    NomineeRepository nomineeRepository;
-    @Autowired
-    CardRepository cardRepository;
-    @Autowired
-    UserRepository userRepository;
-    @Autowired
-    CardService cardService;
 
-   public void createAccount(AccountDto accountDto, Long userId){
-       User user = new User();
-       if(userRepository.existsById(userId)){
-           user = userRepository.findById(userId).get();
-       }
-       Account account = new Account();
-       Card card = new Card();
-       card.setCardNumber(Long.parseLong(cardService.generateCardNumber()));
-       card.setCvv(cardService.generateCvv());
-       card.setCardHolderName(user.getName());
-       card.setStatus("ACTIVE");
-       card.setPin(1122L);
-       card.setAllocationDate(new Date());
-       Calendar calendar = Calendar.getInstance();
-       calendar.setTime(new Date());
-       calendar.add(Calendar.YEAR, 5);
-       card.setExpiryDate(calendar.getTime());
+    private final AccountRepository accountRepository;
+    private final NomineeRepository nomineeRepository;
+    private final UserRepository userRepository;
+    private final CardService cardService;
 
-       switch(accountDto.getAccountType()){
-           case "SAVINGS":{
-               card.setCardType(CardType.DEBIT_GLOBAL);
-               card.setDailyLimit(40000);
-               cardRepository.save(card);
-               account.setAccountType(AccountType.SAVINGS);
-               account.setInterestRate(2.70F);
-               account.setBranch(BranchType.BOB);
-               account.setCard(card);
-               break;
-           }
-           case "CURRENT":{
-               card.setCardType(CardType.CREDIT_PREMIUM);
-               card.setDailyLimit(50000);
-               cardRepository.save(card);
-               account.setAccountType(AccountType.CURRENT);
-               account.setBranch(BranchType.ICIC);
-               account.setCard(card);
-               account.setInterestRate(5.2F);
-               break;
-           }
-           case "PPF":{
-               account.setAccountType(AccountType.PPF);
-               account.setBranch(BranchType.SBI);
-               account.setInterestRate(7.4F);
-               break;
-           }
-           case "SALARY":{
-               card.setCardType(CardType.CREDIT_MASTER);
-               card.setDailyLimit(75000);
-               cardRepository.save(card);
-               account.setAccountType(AccountType.SALARY);
-               account.setBranch(BranchType.HDFC);
-               account.setCard(card);
-               account.setInterestRate(4.1F);
-               break;
-           }
-           default:{
-               throw  new RuntimeException("No AccountType Selected");
-           }
-       }
-       account.setAccountNumber(generateRandomNumber());
-       account.setStatus("ACTIVE");
-       account.setBalance(accountDto.getBalance());
-       Nominee nominee = nomineeRepository.save(accountDto.getNominee());
-       account.setNominee(nominee);
-       account.setProof(accountDto.getProof());
-       account.setOpeningDate(new Date());
-       account.setUser(user);
-       accountRepository.save(account);
-   }
+    /**
+     * Creates a new account for a user and associates a card (if applicable).
+     */
+    public void createAccount(AccountDto accountDto, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
 
-    public Long generateRandomNumber() {
-        Random random = new Random();
-        // Generate a random number between 10000000 and 99999999 (8-digit number)
-        return 10000000 + random.nextLong(90000000);
+        Account account = new Account();
+        account.setAccountNumber(generateUniqueAccountNumber());
+        account.setStatus(AccountStatus.ACTIVE);
+        account.setBalance(accountDto.getBalance());
+        account.setProof(accountDto.getProof());
+        account.setOpeningDate(new Date());
+        account.setUser(user);
+
+        // Save nominee
+        Nominee nominee = nomineeRepository.save(accountDto.getNominee());
+        account.setNominee(nominee);
+
+        // Assign card (if applicable)
+        Card card = cardService.createCardForAccount(accountDto.getAccountType(), user.getName(), 1122L);
+        account.setCard(card);
+
+        // Set account type, branch & interest rate
+        configureAccountType(account, accountDto.getAccountType());
+
+        accountRepository.save(account);
     }
 
     public List<Account> getAllAccountById(Long userId) {
-       User fetchedUser = userRepository.findById(userId).get();
+        User fetchedUser = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
         return fetchedUser.getAccountList();
     }
 
     public double getBalanceAmount(Long accountNumber) {
-        Account account = accountRepository.findByAccountNumber(accountNumber).get();
+        Account account = accountRepository.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new AccountNotFoundException(accountNumber));
         return account.getBalance();
     }
 
     public Nominee getNominee(Long accountNumber) {
-        Account account = accountRepository.findByAccountNumber(accountNumber).get();
+        Account account = accountRepository.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new AccountNotFoundException(accountNumber));
         return account.getNominee();
     }
 
     public User getAccountKycDetail(Long accountNumber) {
-        Account fetchedAccountData = accountRepository.findByAccountNumber(accountNumber).get();
-        User fetechedUser = fetchedAccountData.getUser();
-        fetechedUser.setInvestmentList(null);
-        fetechedUser.setAccountList(null);
-        return fetechedUser;
+        Account fetchedAccount = accountRepository.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new AccountNotFoundException(accountNumber));
+        User user = fetchedAccount.getUser();
+        user.setInvestmentList(null);
+        user.setAccountList(null);
+        return user;
     }
 
     public Account getAccountDetail(Long accountNumber) {
-        Account account = accountRepository.findByAccountNumber(accountNumber).get();
+        Account account = accountRepository.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new AccountNotFoundException(accountNumber));
         account.setUser(null);
         return account;
     }
 
     public void updateNominee(NomineeDto nomineeDto, Long accountId) {
-        Account fetchedAccount = accountRepository.findById(accountId).get();
-        Nominee newNominee = fetchedAccount.getNominee();
-        newNominee.setName(nomineeDto.getName());
-        newNominee.setAccountNumber(nomineeDto.getAccountNumber());
-        newNominee.setRelation(nomineeDto.getRelation());
-        newNominee.setAge(nomineeDto.getAge());
-        newNominee.setGender(nomineeDto.getGender());
-        accountRepository.save(fetchedAccount);
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new AccountNotFoundException(accountId));
+        Nominee nominee = account.getNominee();
+        nominee.setName(nomineeDto.getName());
+        nominee.setAccountNumber(nomineeDto.getAccountNumber());
+        nominee.setRelation(nomineeDto.getRelation());
+        nominee.setAge(nomineeDto.getAge());
+        nominee.setGender(nomineeDto.getGender());
+        nomineeRepository.save(nominee);
     }
 
-    public void updateKycDetails(KycDto kycDto,Long accountId) {
-        Account fetchedAccount = accountRepository.findById(accountId).get();
-        User fetechedUser = fetchedAccount.getUser();
-        if(!kycDto.getName().isEmpty()) fetechedUser.setName(kycDto.getName());
-        if(!kycDto.getAddress().isEmpty()) fetechedUser.setAddress(kycDto.getAddress());
-        if(kycDto.getNumber()!=null) fetechedUser.setNumber(kycDto.getNumber());
-        if(!kycDto.getIdentityProof().isEmpty()) fetechedUser.setIdentityProof(kycDto.getIdentityProof());
-        userRepository.save(fetechedUser);
+    public void updateKycDetails(KycDto kycDto, Long accountId) {
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new AccountNotFoundException(accountId));
+        User user = account.getUser();
+
+        if (kycDto.getName() != null && !kycDto.getName().isEmpty()) user.setName(kycDto.getName());
+        if (kycDto.getAddress() != null && !kycDto.getAddress().isEmpty()) user.setAddress(kycDto.getAddress());
+        if (kycDto.getNumber() != null) user.setNumber(kycDto.getNumber());
+        if (kycDto.getIdentityProof() != null && !kycDto.getIdentityProof().isEmpty())
+            user.setIdentityProof(kycDto.getIdentityProof());
+
+        userRepository.save(user);
+    }
+
+    // === PRIVATE HELPERS ===
+
+    private Long generateUniqueAccountNumber() {
+        Long number;
+        do {
+            number = ThreadLocalRandom.current().nextLong(10000000L, 99999999L);
+        } while (accountRepository.findByAccountNumber(number).isPresent());
+        return number;
+    }
+
+    private void configureAccountType(Account account, String accountType) {
+        switch (accountType.toUpperCase()) {
+            case "SAVINGS" -> {
+                account.setAccountType(AccountType.SAVINGS);
+                account.setBranch(BranchType.BOB);
+                account.setInterestRate(2.70F);
+            }
+            case "CURRENT" -> {
+                account.setAccountType(AccountType.CURRENT);
+                account.setBranch(BranchType.ICIC);
+                account.setInterestRate(5.2F);
+            }
+            case "SALARY" -> {
+                account.setAccountType(AccountType.SALARY);
+                account.setBranch(BranchType.HDFC);
+                account.setInterestRate(4.1F);
+            }
+            case "PPF" -> {
+                account.setAccountType(AccountType.PPF);
+                account.setBranch(BranchType.SBI);
+                account.setInterestRate(7.4F);
+            }
+            default -> throw new RuntimeException("Invalid account type: " + accountType);
+        }
     }
 }

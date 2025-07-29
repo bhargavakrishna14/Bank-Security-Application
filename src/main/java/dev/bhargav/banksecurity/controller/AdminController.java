@@ -1,6 +1,5 @@
-package dev.bhargav.banksecurity.admin;
+package dev.bhargav.banksecurity.controller;
 
-import dev.bhargav.banksecurity.dto.AdminDto;
 import dev.bhargav.banksecurity.entity.Account;
 import dev.bhargav.banksecurity.entity.AccountType;
 import dev.bhargav.banksecurity.entity.BranchType;

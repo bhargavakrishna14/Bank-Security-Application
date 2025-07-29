@@ -1,4 +1,4 @@
-package dev.bhargav.banksecurity.investments;
+package dev.bhargav.banksecurity.controller;
 
 import dev.bhargav.banksecurity.dto.InvestmentDto;
 import dev.bhargav.banksecurity.service.InvestmentService;

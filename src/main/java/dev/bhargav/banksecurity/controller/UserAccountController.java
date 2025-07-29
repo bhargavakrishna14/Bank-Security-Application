@@ -1,4 +1,4 @@
-package dev.bhargav.banksecurity.accounts;
+package dev.bhargav.banksecurity.controller;
 
 import dev.bhargav.banksecurity.dto.AccountDto;
 import dev.bhargav.banksecurity.dto.KycDto;

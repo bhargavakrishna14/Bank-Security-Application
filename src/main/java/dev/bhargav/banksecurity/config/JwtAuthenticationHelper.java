@@ -2,6 +2,7 @@ package dev.bhargav.banksecurity.config;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -91,6 +92,10 @@ public class JwtAuthenticationHelper {
 
 	private SecretKey getSignInKey() {
 //		byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-		return Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+		byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
+		if (keyBytes.length < 32) {
+			throw new IllegalArgumentException("Secret key must be at least 32 bytes for HS256 and 64 bytes for HS512.");
+		}
+		return Keys.hmacShaKeyFor(keyBytes);
 	}
 }

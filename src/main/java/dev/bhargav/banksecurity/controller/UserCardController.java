@@ -1,4 +1,4 @@
-package dev.bhargav.banksecurity.cards;
+package dev.bhargav.banksecurity.controller;
 
 import dev.bhargav.banksecurity.dto.CardDto;
 import dev.bhargav.banksecurity.entity.Card;
