@@ -11,10 +11,8 @@ A Spring Boot application implementing **JWT-based authentication**, **role-base
 * JWT Authentication for all endpoints
 
 * Role-based Access Control:
-
-** CUSTOMER: Limited to their own accounts & cards
-
-** ADMIN: Access to admin endpoints
+  * CUSTOMER: Limited to their own accounts & cards
+  * ADMIN: Access to admin endpoints
 
 * BCrypt Password Encryption
 
@@ -93,26 +91,26 @@ A Spring Boot application implementing **JWT-based authentication**, **role-base
 ## Authentication Flow
 
 * Register - POST /api/v1/auth/register
-'''
+```
 {
   "username": "john_doe",
   "password": "securePass123",
   "email": "john@example.com",
   "role": "CUSTOMER"
 }
-'''
+```
 
 * Login - POST /api/v1/auth/login
-'''
+```
 {
   "username": "john_doe",
   "password": "securePass123"
 }
-'''
+```
 Response:
-'''
+```
 { "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." }
-'''
+```
 
 Use this token in Authorization → Bearer Token for subsequent requests.
 
