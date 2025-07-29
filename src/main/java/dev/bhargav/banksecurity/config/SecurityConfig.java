@@ -26,10 +26,12 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req ->
                         req
-                                .requestMatchers(
-                                        "/api/v1/auth/**"
-                                ).permitAll()
-                                .requestMatchers("/admin/**").hasRole("ADMIN")
+                                .requestMatchers("/api/v1/auth/**")
+                                .permitAll()
+                                .requestMatchers("/api/v1/admin/**")
+                                .hasRole("ADMIN")
+                                .requestMatchers("/api/v1/account/**", "/api/v1/card/**", "/api/v1/invest/**")
+                                .hasRole("CUSTOMER")
                                 .anyRequest()
                                 .authenticated()
                 )
