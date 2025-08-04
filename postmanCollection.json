@@ -1,0 +1,245 @@
+{
+  "info": {
+    "name": "Banksecurity API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "jwtToken", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth - Register",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": { "raw": "http://localhost:8080/api/v1/auth/register", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "v1", "auth", "register"] },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"John Doe\",\n  \"username\": \"john\",\n  \"password\": \"password\",\n  \"address\": \"123 Main St\",\n  \"number\": 1234567890,\n  \"identityProof\": \"AADHAR1234\",\n  \"role\": \"CUSTOMER\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Auth - Login",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": { "raw": "http://localhost:8080/api/v1/auth/login", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "v1", "auth", "login"] },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"john\",\n  \"password\": \"password\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Account - Create",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
+        ],
+        "url": { "raw": "http://localhost:8080/api/v1/account/create/1", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "v1", "account", "create", "1"] },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"accountType\": \"SAVINGS\",\n  \"balance\": 10000,\n  \"proof\": \"PAN1234\",\n  \"nominee\": {\n    \"relation\": \"Father\",\n    \"name\": \"Robert Doe\",\n    \"accountNumber\": 12345678,\n    \"gender\": \"Male\",\n    \"age\": 50\n  }\n}"
+        }
+      }
+    },
+    {
+      "name": "Account - Get All By User",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{jwtToken}}" }],
+        "url": { "raw": "http://localhost:8080/api/v1/account/all/1", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "v1", "account", "all", "1"] }
+      }
+    },
+    {
+      "name": "Account - Get Balance",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{jwtToken}}" }],
+        "url": { "raw": "http://localhost:8080/api/v1/account/balance?accountNumber=12345678", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "v1", "account", "balance"], "query": [{ "key": "accountNumber", "value": "12345678" }] }
+      }
+    },
+    {
+      "name": "Account - Get Nominee",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{jwtToken}}" }],
+        "url": { "raw": "http://localhost:8080/api/v1/account/nominee?accountNumber=12345678", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "v1", "account", "nominee"], "query": [{ "key": "accountNumber", "value": "12345678" }] }
+      }
+    },
+    {
+      "name": "Account - Update Nominee",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
+        ],
+        "url": { "raw": "http://localhost:8080/api/v1/account/updateNominee/1", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "v1", "account", "updateNominee", "1"] },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"relation\": \"Mother\",\n  \"name\": \"Jane Doe\",\n  \"accountNumber\": 87654321,\n  \"gender\": \"Female\",\n  \"age\": 48\n}"
+        }
+      }
+    },
+    {
+      "name": "Account - Get KYC Details",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{jwtToken}}" }],
+        "url": { "raw": "http://localhost:8080/api/v1/account/getKycDetails?accountNumber=12345678", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "v1", "account", "getKycDetails"], "query": [{ "key": "accountNumber", "value": "12345678" }] }
+      }
+    },
+    {
+      "name": "Account - Update KYC",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
+        ],
+        "url": { "raw": "http://localhost:8080/api/v1/account/updateKyc/1", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "v1", "account", "updateKyc", "1"] },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"John Doe\",\n  \"address\": \"New Address\",\n  \"number\": 9876543210,\n  \"identityProof\": \"NEWID1234\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Account - Get Account Summary",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{jwtToken}}" }],
+        "url": { "raw": "http://localhost:8080/api/v1/account/getAccount/summary?accountNumber=12345678", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "v1", "account", "getAccount", "summary"], "query": [{ "key": "accountNumber", "value": "12345678" }] }
+      }
+    },
+    {
+      "name": "Card - Block",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{jwtToken}}" }],
+        "url": { "raw": "http://localhost:8080/api/v1/card/block?accountNumber=12345678&cardNumber=1111222233334444", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "v1", "card", "block"], "query": [{ "key": "accountNumber", "value": "12345678" }, { "key": "cardNumber", "value": "1111222233334444" }] }
+      }
+    },
+    {
+      "name": "Card - Apply New",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
+        ],
+        "url": { "raw": "http://localhost:8080/api/v1/card/apply/new?accountNumber=12345678", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "v1", "card", "apply", "new"], "query": [{ "key": "accountNumber", "value": "12345678" }] },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"cardHolderName\": \"John Doe\",\n  \"cardType\": \"DEBIT_CLASSIC\",\n  \"pin\": 1234\n}"
+        }
+      }
+    },
+    {
+      "name": "Card - Modify Setting",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
+        ],
+        "url": { "raw": "http://localhost:8080/api/v1/card/setting?cardNumber=1111222233334444", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "v1", "card", "setting"], "query": [{ "key": "cardNumber", "value": "1111222233334444" }] },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"dailyLimit\": 25000,\n  \"pin\": 5678\n}"
+        }
+      }
+    },
+    {
+      "name": "Invest - Now",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
+        ],
+        "url": { "raw": "http://localhost:8080/api/v1/invest/now?accountId=1", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "v1", "invest", "now"], "query": [{ "key": "accountId", "value": "1" }] },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"investmentType\": \"GOLD\",\n  \"amount\": 5000,\n  \"duration\": \"2 years\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Admin - Get All Users",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{jwtToken}}" }],
+        "url": { "raw": "http://localhost:8080/api/v1/admin/getAllUser", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "v1", "admin", "getAllUser"] }
+      }
+    },
+    {
+      "name": "Admin - Get User By Name",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{jwtToken}}" }],
+        "url": { "raw": "http://localhost:8080/api/v1/admin/getUserByName/john", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "v1", "admin", "getUserByName", "john"] }
+      }
+    },
+    {
+      "name": "Admin - Delete User",
+      "request": {
+        "method": "DELETE",
+        "header": [{ "key": "Authorization", "value": "Bearer {{jwtToken}}" }],
+        "url": { "raw": "http://localhost:8080/api/v1/admin/deleteUser/1", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "v1", "admin", "deleteUser", "1"] }
+      }
+    },
+    {
+      "name": "Admin - Deactivate Account",
+      "request": {
+        "method": "PUT",
+        "header": [{ "key": "Authorization", "value": "Bearer {{jwtToken}}" }],
+        "url": { "raw": "http://localhost:8080/api/v1/admin/account/deactivate?userId=1&accountId=1", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "v1", "admin", "account", "deactivate"], "query": [{ "key": "userId", "value": "1" }, { "key": "accountId", "value": "1" }] }
+      }
+    },
+    {
+      "name": "Admin - Activate Account",
+      "request": {
+        "method": "PUT",
+        "header": [{ "key": "Authorization", "value": "Bearer {{jwtToken}}" }],
+        "url": { "raw": "http://localhost:8080/api/v1/admin/account/activate?userId=1&accountId=1", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "v1", "admin", "account", "activate"], "query": [{ "key": "userId", "value": "1" }, { "key": "accountId", "value": "1" }] }
+      }
+    },
+    {
+      "name": "Admin - Get Active Accounts List",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{jwtToken}}" }],
+        "url": { "raw": "http://localhost:8080/api/v1/admin/account/getActiveAccountsList", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "v1", "admin", "account", "getActiveAccountsList"] }
+      }
+    },
+    {
+      "name": "Admin - Get Inactive Accounts List",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{jwtToken}}" }],
+        "url": { "raw": "http://localhost:8080/api/v1/admin/account/getInActiveAccountsList", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "v1", "admin", "account", "getInActiveAccountsList"] }
+      }
+    },
+    {
+      "name": "Admin - Get Account List By Account Type",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{jwtToken}}" }],
+        "url": { "raw": "http://localhost:8080/api/v1/admin/accountList/ByAccountType/SAVINGS", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "v1", "admin", "accountList", "ByAccountType", "SAVINGS"] }
+      }
+    },
+    {
+      "name": "Admin - Get Account List By Branch Type",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{jwtToken}}" }],
+        "url": { "raw": "http://localhost:8080/api/v1/admin/accountList/ByBranchType/SBI", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "v1", "admin", "accountList", "ByBranchType", "SBI"] }
+      }
+    }
+  ]
+}
