@@ -30,7 +30,7 @@ public class User implements UserDetails {
     private String identityProof;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    private Role roles;
+    private Role role;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonIgnoreProperties("user")
@@ -43,7 +43,7 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority("ROLE_" + this.roles.getRoleName()));
+        authorities.add(new SimpleGrantedAuthority("ROLE_" + this.role.getRoleName()));
         return authorities;
     }
 

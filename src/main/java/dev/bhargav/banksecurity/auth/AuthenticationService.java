@@ -3,6 +3,7 @@ package dev.bhargav.banksecurity.auth;
 import dev.bhargav.banksecurity.entity.Role;
 import dev.bhargav.banksecurity.entity.User;
 import dev.bhargav.banksecurity.config.JwtAuthenticationHelper;
+import dev.bhargav.banksecurity.repository.RoleRepository;
 import dev.bhargav.banksecurity.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,6 +24,8 @@ public class AuthenticationService {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final RoleRepository roleRepository;
+
     public AuthenticationResponse register(RegisterRequest registerRequest) {
         if (userRepository.findByUsername(registerRequest.getUsername()).isPresent()) {
             throw new IllegalArgumentException("Username already exists");
@@ -37,13 +40,19 @@ public class AuthenticationService {
         newUser.setAddress(registerRequest.getAddress());
 
         // Dynamically assign role
-        Role role = new Role();
-        if ("ADMIN".equalsIgnoreCase(registerRequest.getRole())) {
-            role.setRoleName("ADMIN");
-        } else {
-            role.setRoleName("CUSTOMER"); // default
-        }
-        newUser.setRoles(role);
+//        Role role = new Role();
+//        if ("ADMIN".equalsIgnoreCase(registerRequest.getRole())) {
+//            role.setRoleName("ADMIN");
+//        } else {
+//            role.setRoleName("CUSTOMER"); // default
+//        }
+//        newUser.setRoles(role);
+
+        // Fetch role from DB
+        String roleName = "ADMIN".equalsIgnoreCase(registerRequest.getRole()) ? "ADMIN" : "CUSTOMER";
+        Role role = roleRepository.findByRoleName(roleName)
+                .orElseThrow(() -> new IllegalArgumentException("Role not found"));
+        newUser.setRole(role);
 
         userRepository.save(newUser);
 
