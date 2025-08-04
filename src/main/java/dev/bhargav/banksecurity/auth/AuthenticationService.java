@@ -3,6 +3,7 @@ package dev.bhargav.banksecurity.auth;
 import dev.bhargav.banksecurity.entity.Role;
 import dev.bhargav.banksecurity.entity.User;
 import dev.bhargav.banksecurity.config.JwtAuthenticationHelper;
+import dev.bhargav.banksecurity.exceptions.UserNameAlreadyExistsException;
 import dev.bhargav.banksecurity.repository.RoleRepository;
 import dev.bhargav.banksecurity.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,7 @@ public class AuthenticationService {
 
     public AuthenticationResponse register(RegisterRequest registerRequest) {
         if (userRepository.findByUsername(registerRequest.getUsername()).isPresent()) {
-            throw new IllegalArgumentException("Username already exists");
+            throw new UserNameAlreadyExistsException("Username already exists");
         }
 
         User newUser = new User();
