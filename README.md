@@ -127,7 +127,7 @@ Use this token in Authorization → Bearer Token for subsequent requests.
 | POST         | /api/v1/auth/login    | Login & get JWT token |
 
 
-### Account Management (CUSTOMER)
+### Account Management (CUSTOMER, ADMIN)
 
 | Method       | Endpoint                                            | Description                   |
 | ------------ |:----------------------------------------------------|:------------------------------|
@@ -141,7 +141,7 @@ Use this token in Authorization → Bearer Token for subsequent requests.
 | GET          | /api/v1/account/getAccount/summary?accountNumber={} | Account summary               |
 
 
-### Card Operations (CUSTOMER)
+### Card Operations (CUSTOMER, ADMIN)
 
 | Method       | Endpoint                                          | Description                       |
 | ------------ |:--------------------------------------------------|:----------------------------------|
@@ -150,7 +150,7 @@ Use this token in Authorization → Bearer Token for subsequent requests.
 | GET          | /api/v1/card/block?accountNumber={}&cardNumber={} | Block card linked to an account   |
 
 
-### Investments (CUSTOMER)
+### Investments (CUSTOMER, ADMIN)
 
 | Method       | Endpoint                        | Description                                                |
 | ------------ |:--------------------------------|:-----------------------------------------------------------|
