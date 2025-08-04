@@ -17,7 +17,7 @@ public class UserCardController {
 
     @GetMapping("/block")
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasAnyRole('CUSTOMER','ADMIN')")
     public String blockCard(
             @RequestParam Long accountNumber,
             @RequestParam Long cardNumber) {
@@ -26,7 +26,7 @@ public class UserCardController {
 
     @PostMapping("/apply/new")
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasAnyRole('CUSTOMER','ADMIN')")
     public String applyNewCard(
             @RequestParam Long accountNumber,
             @RequestBody CardDto cardDto) {
@@ -35,7 +35,7 @@ public class UserCardController {
 
     @PutMapping("/setting")
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasAnyRole('CUSTOMER','ADMIN')")
     public void modifyLimit(
             @RequestBody Card card,
             @RequestParam Long cardNumber) {

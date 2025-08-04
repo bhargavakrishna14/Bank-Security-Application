@@ -31,9 +31,9 @@ public class SecurityConfig {
                                 .requestMatchers("/api/v1/admin/**")
                                 .hasRole("ADMIN")
                                 .requestMatchers("/api/v1/account/**", "/api/v1/card/**", "/api/v1/invest/**")
-                                .hasRole("CUSTOMER")
+                                .hasAnyRole("CUSTOMER", "ADMIN")
                                 .anyRequest()
-                                .authenticated()
+                                .hasRole("ADMIN") // <-- Any other request defaults to ADMIN
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 

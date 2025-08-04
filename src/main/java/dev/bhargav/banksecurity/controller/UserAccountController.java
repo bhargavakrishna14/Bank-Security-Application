@@ -22,7 +22,7 @@ public class UserAccountController {
 
     @PostMapping("/create/{userId}")
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasAnyRole('CUSTOMER','ADMIN')")
     public void accountOpening(
             @RequestBody AccountDto accountDto,
             @PathVariable Long userId) {
@@ -31,7 +31,7 @@ public class UserAccountController {
 
     @GetMapping("/all/{userId}")
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasAnyRole('CUSTOMER','ADMIN')")
     public List<Account> getAllAccountByUserId(
             @PathVariable Long userId) {
         return accountService.getAllAccountById(userId);
@@ -39,21 +39,21 @@ public class UserAccountController {
 
     @GetMapping("/balance")
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasAnyRole('CUSTOMER','ADMIN')")
     public double getBalance(@RequestParam Long accountNumber) {
         return accountService.getBalanceAmount(accountNumber);
     }
 
     @GetMapping("/nominee")
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasAnyRole('CUSTOMER','ADMIN')")
     public Nominee getNominee(@RequestParam Long accountNumber) {
         return accountService.getNominee(accountNumber);
     }
 
     @PutMapping("/updateNominee/{accountId}")
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasAnyRole('CUSTOMER','ADMIN')")
     public void updateNominee(
             @RequestBody NomineeDto nomineeDto,
             @PathVariable Long accountId) {
@@ -62,14 +62,14 @@ public class UserAccountController {
 
     @GetMapping("/getKycDetails")
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasAnyRole('CUSTOMER','ADMIN')")
     public User getKycDetails(@RequestParam Long accountNumber) {
         return accountService.getAccountKycDetail(accountNumber);
     }
 
     @PutMapping("/updateKyc/{accountId}")
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasAnyRole('CUSTOMER','ADMIN')")
     public void updateKycDetails(
             @RequestBody KycDto kycDto,
             @PathVariable Long accountId) {
@@ -78,7 +78,7 @@ public class UserAccountController {
 
     @GetMapping("/getAccount/summary")
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasAnyRole('CUSTOMER','ADMIN')")
     public Account getAccountSummary(@RequestParam Long accountNumber) {
         return accountService.getAccountDetail(accountNumber);
     }

@@ -17,6 +17,6 @@ application:
   security:
     jwt:
       secret-key: qwertyuiopasdfghjklzxcvbnm123456  # exactly 32 bytes
-      expiration: 86400000   # (a day (60*60))
+      expiration: 86400000   # (a day (24*60*60*1000))
 
 # thisisacodingninjasdemonstrationforsecretkeyinspringsecurityjsonwebtokenauthentication

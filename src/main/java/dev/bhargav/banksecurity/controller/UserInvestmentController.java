@@ -16,7 +16,7 @@ public class UserInvestmentController {
 
     @PostMapping("/now")
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasAnyRole('CUSTOMER','ADMIN')")
     public String investNow(
             @RequestParam Long accountId ,
             @RequestBody InvestmentDto investmentDto) {
