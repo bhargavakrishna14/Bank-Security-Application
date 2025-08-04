@@ -24,6 +24,10 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
 
     public AuthenticationResponse register(RegisterRequest registerRequest) {
+        if (userRepository.findByUsername(registerRequest.getUsername()).isPresent()) {
+            throw new IllegalArgumentException("Username already exists");
+        }
+
         User newUser = new User();
         newUser.setName(registerRequest.getName());
         newUser.setUsername(registerRequest.getUsername());
@@ -57,10 +61,10 @@ public class AuthenticationService {
                 )
         );
 
-//        User user = (User) auth.getPrincipal();
+        User user = (User) auth.getPrincipal();
 
-        User user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow();
+//        User user = userRepository.findByUsername(request.getUsername())
+//                .orElseThrow();
 
         final String token = jwtAuthenticationHelper.generateToken(user);
 
