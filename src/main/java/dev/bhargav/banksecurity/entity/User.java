@@ -29,7 +29,7 @@ public class User implements UserDetails {
 
     private String identityProof;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     private Role role;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
