@@ -14,9 +14,10 @@ public class AuthenticationController {
     private final AuthenticationService service;
 
     @PostMapping("/register")
-    @ResponseStatus(HttpStatus.CREATED)
-    public void registerUser(@RequestBody RegisterRequest request) {
-        ResponseEntity.ok(service.register(request));
+    public ResponseEntity<AuthenticationResponse> registerUser(
+            @RequestBody RegisterRequest request) {
+        AuthenticationResponse response = service.register(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PostMapping("/login")
